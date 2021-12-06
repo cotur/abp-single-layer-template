@@ -14,6 +14,11 @@ public class Todo : Entity<Guid>
 
     public Todo(Guid id, [NotNull] string name) : base(id)
     {
+        SetName(name);
+    }
+
+    public void SetName(string name)
+    {
         Name = Check.NotNullOrWhiteSpace(name, nameof(name));
     }
 }
