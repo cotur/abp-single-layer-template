@@ -1,8 +1,10 @@
-﻿using MyCompanyName.MyProjectName.EfCore;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using MyCompanyName.MyProjectName.EfCore;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Autofac;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.EntityFrameworkCore.Sqlite;
 using Volo.Abp.Modularity;
 
 namespace MyCompanyName.MyProjectName;
@@ -10,7 +12,7 @@ namespace MyCompanyName.MyProjectName;
 [DependsOn(
     typeof(AbpAspNetCoreMvcModule),
     typeof(AbpAutofacModule),
-    typeof(AbpEntityFrameworkCoreModule)
+    typeof(AbpEntityFrameworkCoreSqliteModule)
     )]
 public class MyProjectNameModule : AbpModule
 {
@@ -26,6 +28,16 @@ public class MyProjectNameModule : AbpModule
             /* Remove "includeAllEntities: true" to create
              * default repositories only for aggregate roots */
             options.AddDefaultRepositories(includeAllEntities: true);
+        });
+        
+        Configure<AbpDbContextOptions>(options =>
+        {
+            /* The main point to change your DBMS.
+             * See also AbpCommercialDemoMigrationsDbContextFactory for EF Core tooling. */
+            options.Configure(configurationContext =>
+            {
+                configurationContext.UseSqlite();
+            });
         });
     }
 
