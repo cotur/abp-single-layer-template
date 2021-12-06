@@ -9,13 +9,5 @@ builder.Services.AddApplication<MyProjectNameModule>();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
-
-app.MapGet("/todo", () => new List<string>
-{
-    "Todo 1",
-    "Todo 2"
-});
-
 app.InitializeApplication();
 app.Run();

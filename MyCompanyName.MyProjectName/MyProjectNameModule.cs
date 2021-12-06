@@ -1,12 +1,12 @@
 ﻿using Volo.Abp;
-using Volo.Abp.AspNetCore;
+using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Autofac;
 using Volo.Abp.Modularity;
 
 namespace MyCompanyName.MyProjectName;
 
 [DependsOn(
-    typeof(AbpAspNetCoreModule),
+    typeof(AbpAspNetCoreMvcModule),
     typeof(AbpAutofacModule)
     )]
 public class MyProjectNameModule : AbpModule
