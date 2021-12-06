@@ -11,9 +11,9 @@ public class TodoController : AbpController
     {
         return new List<Todo>
         {
-            new() {Name = "Todo 1"},
-            new() {Name = "Todo 2"},
-            new() {Name = "Todo 3"},
+            new(GuidGenerator.Create(), "Todo 1"),
+            new(GuidGenerator.Create(), "Todo 2"),
+            new(GuidGenerator.Create(), "Todo 3")
         };
     }
 }
