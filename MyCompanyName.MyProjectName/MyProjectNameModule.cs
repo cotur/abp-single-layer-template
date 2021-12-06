@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
-using MyCompanyName.MyProjectName.EfCore;
+﻿using MyCompanyName.MyProjectName.EfCore;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Autofac;
