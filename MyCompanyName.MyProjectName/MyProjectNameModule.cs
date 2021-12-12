@@ -1,23 +1,52 @@
-﻿using MyCompanyName.MyProjectName.EfCore;
+﻿using Microsoft.OpenApi.Models;
+using MyCompanyName.MyProjectName.EfCore;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Autofac;
+using Volo.Abp.AutoMapper;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.Sqlite;
 using Volo.Abp.Modularity;
+using Volo.Abp.Swashbuckle;
 
 namespace MyCompanyName.MyProjectName;
 
 [DependsOn(
     typeof(AbpAspNetCoreMvcModule),
     typeof(AbpAutofacModule),
-    typeof(AbpEntityFrameworkCoreSqliteModule)
+    typeof(AbpEntityFrameworkCoreSqliteModule),
+    typeof(AbpSwashbuckleModule)
     )]
 public class MyProjectNameModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        var hostingEnvironment = context.Services.GetHostingEnvironment();
+        var configuration = context.Services.GetConfiguration();
+        
+        ConfigureAutoMapper();
+        ConfigureSwaggerServices(context.Services);
         ConfigureEfCore(context);
+    }
+
+    private void ConfigureSwaggerServices(IServiceCollection services)
+    {
+        services.AddAbpSwaggerGen(
+            options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "MyProjectName API", Version = "v1" });
+                options.DocInclusionPredicate((docName, description) => true);
+                options.CustomSchemaIds(type => type.FullName);
+            }
+        );
+    }
+
+    private void ConfigureAutoMapper()
+    {
+        Configure<AbpAutoMapperOptions>(options =>
+        {
+            options.AddMaps<MyProjectNameModule>();
+        });
     }
 
     private void ConfigureEfCore(ServiceConfigurationContext context)
@@ -56,6 +85,13 @@ public class MyProjectNameModule : AbpModule
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
+        
+        app.UseSwagger();
+        app.UseAbpSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyProjectName API");
+        });
+        
         app.UseConfiguredEndpoints();
     }
 }
