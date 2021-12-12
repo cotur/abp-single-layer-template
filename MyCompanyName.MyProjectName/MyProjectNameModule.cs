@@ -2,6 +2,7 @@
 using MyCompanyName.MyProjectName.EfCore;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.EntityFrameworkCore;
@@ -15,7 +16,8 @@ namespace MyCompanyName.MyProjectName;
     typeof(AbpAspNetCoreMvcModule),
     typeof(AbpAutofacModule),
     typeof(AbpEntityFrameworkCoreSqliteModule),
-    typeof(AbpSwashbuckleModule)
+    typeof(AbpSwashbuckleModule),
+    typeof(AbpAspNetCoreSerilogModule)
     )]
 public class MyProjectNameModule : AbpModule
 {
@@ -92,6 +94,7 @@ public class MyProjectNameModule : AbpModule
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyProjectName API");
         });
         
+        app.UseAbpSerilogEnrichers();
         app.UseConfiguredEndpoints();
     }
 }

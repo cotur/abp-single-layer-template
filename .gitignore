@@ -251,6 +251,10 @@ paket-files/
 .idea/
 *.sln.iml
 
+
+# MyProjectName
+MyCompanyName.MyProjectName/Logs/*
+
 *.db
 *.db-shm
 *.db-wal
