@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+using MyCompanyName.MyProjectName.Domain.Locazliation;
 using MyCompanyName.MyProjectName.EfCore;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
@@ -7,8 +8,12 @@ using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.Sqlite;
+using Volo.Abp.Localization;
+using Volo.Abp.Localization.ExceptionHandling;
 using Volo.Abp.Modularity;
 using Volo.Abp.Swashbuckle;
+using Volo.Abp.Validation.Localization;
+using Volo.Abp.VirtualFileSystem;
 
 namespace MyCompanyName.MyProjectName;
 
@@ -29,7 +34,47 @@ public class MyProjectNameModule : AbpModule
         ConfigureAutoMapper();
         ConfigureSwaggerServices(context.Services);
         ConfigureAutoApiControllers();
+        ConfigureVirtualFiles(hostingEnvironment);
+        ConfigureLocalizations();
+        
         ConfigureEfCore(context);
+    }
+
+    private void ConfigureLocalizations()
+    {
+        Configure<AbpLocalizationOptions>(options =>
+        {
+            options.Resources
+                .Add<MyProjectNameResource>("en")
+                .AddBaseTypes(typeof(AbpValidationResource))
+                .AddVirtualJson("/Domain/Localization/MyProjectName");
+
+            options.DefaultResourceType = typeof(MyProjectNameResource);
+            
+            options.Languages.Add(new LanguageInfo("en", "en", "English"));
+            options.Languages.Add(new LanguageInfo("tr", "tr", "Türkçe"));
+        });
+
+        Configure<AbpExceptionLocalizationOptions>(options =>
+        {
+            options.MapCodeNamespace("MyProjectName", typeof(MyProjectNameResource));
+        });
+    }
+
+    private void ConfigureVirtualFiles(IWebHostEnvironment hostingEnvironment)
+    {
+        Configure<AbpVirtualFileSystemOptions>(options =>
+        {
+            options.FileSets.AddEmbedded<MyProjectNameModule>();
+        });
+
+        if (hostingEnvironment.IsDevelopment())
+        {
+            Configure<AbpVirtualFileSystemOptions>(options =>
+            {
+                options.FileSets.ReplaceEmbeddedByPhysical<MyProjectNameModule>(hostingEnvironment.ContentRootPath);
+            });
+        }
     }
 
     private void ConfigureAutoApiControllers()
@@ -85,17 +130,20 @@ public class MyProjectNameModule : AbpModule
         var app = context.GetApplicationBuilder();
         var env = context.GetEnvironment();
 
-        // Configure the HTTP request pipeline.
         if (env.IsDevelopment())
         {
-            app.UseExceptionHandler("/Error");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseDeveloperExceptionPage();
             app.UseHsts();
         }
 
+        app.UseAbpRequestLocalization();
+        
+        app.UseCorrelationId();
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
+        
+        app.UseUnitOfWork();
         
         app.UseSwagger();
         app.UseAbpSwaggerUI(options =>
