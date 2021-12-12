@@ -19,6 +19,6 @@ public class Todo : Entity<Guid>
 
     public void SetName(string name)
     {
-        Name = Check.NotNullOrWhiteSpace(name, nameof(name));
+        Name = Check.NotNullOrWhiteSpace(name, nameof(name), TodoConsts.MaxNameLength, TodoConsts.MinNameLength);
     }
 }

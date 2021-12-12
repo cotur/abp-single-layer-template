@@ -28,7 +28,16 @@ public class MyProjectNameModule : AbpModule
         
         ConfigureAutoMapper();
         ConfigureSwaggerServices(context.Services);
+        ConfigureAutoApiControllers();
         ConfigureEfCore(context);
+    }
+
+    private void ConfigureAutoApiControllers()
+    {
+        Configure<AbpAspNetCoreMvcOptions>(options =>
+        {
+            options.ConventionalControllers.Create(typeof(MyProjectNameModule).Assembly);
+        });
     }
 
     private void ConfigureSwaggerServices(IServiceCollection services)
