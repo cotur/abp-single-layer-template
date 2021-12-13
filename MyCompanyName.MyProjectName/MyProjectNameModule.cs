@@ -7,10 +7,7 @@ using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Authentication.JwtBearer;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.Localization;
-using Volo.Abp.AspNetCore.Mvc.UI;
-using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
-using Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
@@ -18,7 +15,7 @@ using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.EntityFrameworkCore;
-using Volo.Abp.EntityFrameworkCore.Sqlite;
+using Volo.Abp.EntityFrameworkCore.SqlServer;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
@@ -31,7 +28,6 @@ using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.HttpApi;
-using Volo.Abp.PermissionManagement.Web;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.Web;
@@ -39,7 +35,6 @@ using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.Web;
-using Volo.Abp.UI;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
@@ -49,7 +44,7 @@ namespace MyCompanyName.MyProjectName;
 [DependsOn(
     typeof(AbpAspNetCoreMvcModule),
     typeof(AbpAutofacModule),
-    typeof(AbpEntityFrameworkCoreSqliteModule),
+    typeof(AbpEntityFrameworkCoreSqlServerModule),
     typeof(AbpSwashbuckleModule),
     typeof(AbpAspNetCoreAuthenticationJwtBearerModule),
     typeof(AbpAspNetCoreSerilogModule),
@@ -230,7 +225,7 @@ public class MyProjectNameModule : AbpModule
              * See also AbpCommercialDemoMigrationsDbContextFactory for EF Core tooling. */
             options.Configure(configurationContext =>
             {
-                configurationContext.UseSqlite();
+                configurationContext.UseSqlServer();
             });
         });
     }
