@@ -247,6 +247,8 @@ public class MyProjectNameModule : AbpModule
             app.UseErrorPage();
         }
 
+        app.UseMiddleware<DbSeederMiddleware>();
+        
         app.UseCorrelationId();
         app.UseStaticFiles();
         app.UseRouting();
