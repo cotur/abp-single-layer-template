@@ -2,16 +2,36 @@
 using MyCompanyName.MyProjectName.Domain.Locazliation;
 using MyCompanyName.MyProjectName.EfCore;
 using Volo.Abp;
+using Volo.Abp.Account;
+using Volo.Abp.Account.Web;
+using Volo.Abp.AspNetCore.Authentication.JwtBearer;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.Localization;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.Sqlite;
+using Volo.Abp.FeatureManagement;
+using Volo.Abp.FeatureManagement.EntityFrameworkCore;
+using Volo.Abp.Identity;
+using Volo.Abp.Identity.EntityFrameworkCore;
+using Volo.Abp.Identity.Web;
+using Volo.Abp.IdentityServer.EntityFrameworkCore;
 using Volo.Abp.Localization;
 using Volo.Abp.Localization.ExceptionHandling;
 using Volo.Abp.Modularity;
+using Volo.Abp.PermissionManagement;
+using Volo.Abp.PermissionManagement.EntityFrameworkCore;
+using Volo.Abp.PermissionManagement.HttpApi;
+using Volo.Abp.SettingManagement;
+using Volo.Abp.SettingManagement.EntityFrameworkCore;
+using Volo.Abp.SettingManagement.Web;
 using Volo.Abp.Swashbuckle;
+using Volo.Abp.TenantManagement;
+using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Volo.Abp.TenantManagement.Web;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
 
@@ -22,10 +42,57 @@ namespace MyCompanyName.MyProjectName;
     typeof(AbpAutofacModule),
     typeof(AbpEntityFrameworkCoreSqliteModule),
     typeof(AbpSwashbuckleModule),
-    typeof(AbpAspNetCoreSerilogModule)
+    typeof(AbpAspNetCoreAuthenticationJwtBearerModule),
+    typeof(AbpAspNetCoreSerilogModule),
+    
+    // Account
+    typeof(AbpAccountApplicationModule),
+    typeof(AbpAccountHttpApiModule),
+    typeof(AbpAccountWebIdentityServerModule),
+    
+    // Identity
+    typeof(AbpIdentityApplicationModule),
+    typeof(AbpIdentityHttpApiModule),
+    typeof(AbpIdentityEntityFrameworkCoreModule),
+    typeof(AbpIdentityServerEntityFrameworkCoreModule),
+    typeof(AbpIdentityWebModule),
+    
+    // Permission Management
+    typeof(AbpPermissionManagementApplicationModule),
+    typeof(AbpPermissionManagementHttpApiModule),
+    typeof(AbpPermissionManagementEntityFrameworkCoreModule),
+    
+    // Tenant Management
+    typeof(AbpTenantManagementApplicationModule),
+    typeof(AbpTenantManagementHttpApiModule),
+    typeof(AbpTenantManagementEntityFrameworkCoreModule),
+    typeof(AbpTenantManagementWebModule),
+    
+    // Feature Management
+    typeof(AbpFeatureManagementApplicationModule),
+    typeof(AbpFeatureManagementEntityFrameworkCoreModule),
+    typeof(AbpFeatureManagementHttpApiModule),
+    typeof(AbpFeatureManagementWebModule),
+    
+    // Setting Management
+    typeof(AbpSettingManagementApplicationModule),
+    typeof(AbpSettingManagementEntityFrameworkCoreModule),
+    typeof(AbpSettingManagementHttpApiModule),
+    typeof(AbpSettingManagementWebModule)
+
     )]
 public class MyProjectNameModule : AbpModule
 {
+    public override void PreConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
+        {
+            options.AddAssemblyResource(
+                typeof(MyProjectNameResource)
+            );
+        });
+    }
+
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
@@ -35,12 +102,25 @@ public class MyProjectNameModule : AbpModule
         ConfigureSwaggerServices(context.Services);
         ConfigureAutoApiControllers();
         ConfigureVirtualFiles(hostingEnvironment);
-        ConfigureLocalizations();
+        ConfigureLocalizationServices();
+        
+        ConfigureAuthentication(context, configuration);
         
         ConfigureEfCore(context);
     }
 
-    private void ConfigureLocalizations()
+    private void ConfigureAuthentication(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        context.Services.AddAuthentication()
+            .AddJwtBearer(options =>
+            {
+                options.Authority = configuration["AuthServer:Authority"];
+                options.RequireHttpsMetadata = Convert.ToBoolean(configuration["AuthServer:RequireHttpsMetadata"]);
+                options.Audience = "MyProjectName";
+            });
+    }
+
+    private void ConfigureLocalizationServices()
     {
         Configure<AbpLocalizationOptions>(options =>
         {
@@ -133,24 +213,35 @@ public class MyProjectNameModule : AbpModule
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.UseHsts();
         }
 
         app.UseAbpRequestLocalization();
-        
+
+        if (!env.IsDevelopment())
+        {
+            app.UseErrorPage();
+        }
+
         app.UseCorrelationId();
-        app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
-        
+        app.UseAuthentication();
+        app.UseJwtTokenMiddleware();
+
+        // if (MultiTenancyConsts.IsEnabled)
+        // {
+        //     app.UseMultiTenancy();
+        // }
+
         app.UseUnitOfWork();
-        
+        app.UseIdentityServer();
+        app.UseAuthorization();
         app.UseSwagger();
         app.UseAbpSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyProjectName API");
         });
-        
+        app.UseAuditing();
         app.UseAbpSerilogEnrichers();
         app.UseConfiguredEndpoints();
     }
