@@ -1,6 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
-using MyCompanyName.MyProjectName.Domain.Locazliation;
+using MyCompanyName.MyProjectName.Domain.Localization;
 using MyCompanyName.MyProjectName.EfCore;
+using MyCompanyName.MyProjectName.MultiTenancy;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
@@ -173,6 +174,11 @@ public class MyProjectNameModule : AbpModule
 
     private void ConfigureVirtualFiles(IWebHostEnvironment hostingEnvironment)
     {
+        Configure<AbpVirtualFileSystemOptions>(options =>
+        {
+            options.FileSets.AddEmbedded<MyProjectNameModule>();
+        });
+        
         if (hostingEnvironment.IsDevelopment())
         {
             Configure<AbpVirtualFileSystemOptions>(options =>
@@ -255,10 +261,10 @@ public class MyProjectNameModule : AbpModule
         app.UseAuthentication();
         app.UseJwtTokenMiddleware();
 
-        // if (MultiTenancyConsts.IsEnabled)
-        // {
-        //     app.UseMultiTenancy();
-        // }
+        if (MultiTenancyConsts.IsEnabled)
+        {
+            app.UseMultiTenancy();
+        }
 
         app.UseUnitOfWork();
         app.UseIdentityServer();

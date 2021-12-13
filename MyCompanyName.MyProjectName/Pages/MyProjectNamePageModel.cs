@@ -1,4 +1,4 @@
-﻿using MyCompanyName.MyProjectName.Domain.Locazliation;
+﻿using MyCompanyName.MyProjectName.Domain.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.RazorPages;
 
 namespace MyCompanyName.MyProjectName.Pages;

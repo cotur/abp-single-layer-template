@@ -78,8 +78,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Localization\MyProjectName\*.json" />
     <Content Remove="Domain\Localization\MyProjectName\*.json" />
+    <EmbeddedResource Include="Domain\Localization\MyProjectName\*.json" />
   </ItemGroup>
   
 </Project>
