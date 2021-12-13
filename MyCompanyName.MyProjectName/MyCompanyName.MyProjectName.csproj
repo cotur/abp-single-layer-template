@@ -63,6 +63,14 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="Volo.Abp.BackgroundJobs.EntityFrameworkCore" Version="5.0.0-rc.*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" Version="5.0.0-rc.*" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic" Version="5.0.0-rc.*" />
   </ItemGroup>
   

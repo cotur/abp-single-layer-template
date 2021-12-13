@@ -1,19 +1,24 @@
 ﻿using JetBrains.Annotations;
 using Volo.Abp;
-using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace MyCompanyName.MyProjectName.Domain.Todos;
 
-public class Todo : Entity<Guid>
+public class Todo : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
     public string Name { get; set; }
+
+    public Guid? TenantId { get; set; }
 
     protected Todo()
     {
     }
 
-    public Todo(Guid id, [NotNull] string name) : base(id)
+    public Todo(Guid id, [NotNull] string name, Guid? tenantId = null) : base(id)
     {
+        TenantId = tenantId;
+        
         SetName(name);
     }
 

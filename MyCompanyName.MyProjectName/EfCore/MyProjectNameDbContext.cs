@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyCompanyName.MyProjectName.Domain.Todos;
+using Volo.Abp.AuditLogging.EntityFrameworkCore;
+using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EntityFrameworkCore;
@@ -64,8 +66,8 @@ public class MyProjectNameDbContext :
 
         builder.ConfigurePermissionManagement();
         builder.ConfigureSettingManagement();
-        // builder.ConfigureBackgroundJobs();
-        // builder.ConfigureAuditLogging();
+        builder.ConfigureBackgroundJobs();
+        builder.ConfigureAuditLogging();
         builder.ConfigureIdentity();
         builder.ConfigureIdentityServer();
         builder.ConfigureFeatureManagement();
