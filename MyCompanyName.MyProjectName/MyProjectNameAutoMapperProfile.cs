@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using MyCompanyName.MyProjectName.Application.Todos.Dtos;
-using MyCompanyName.MyProjectName.Domain.Todos;
+using MyCompanyName.MyProjectName.Entities.Todos;
+using MyCompanyName.MyProjectName.Services.Dtos;
 
 namespace MyCompanyName.MyProjectName;
 
@@ -9,8 +9,6 @@ public class MyProjectNameAutoMapperProfile : Profile
     public MyProjectNameAutoMapperProfile()
     {
         CreateMap<Todo, TodoDto>();
-        CreateMap<CreateTodoDto, Todo>();
-        CreateMap<UpdateTodoDto, Todo>();
         
         //Define your AutoMapper configuration here for the Web project.
     }

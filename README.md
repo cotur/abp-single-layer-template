@@ -1,3 +1,5 @@
+> This repository is actively development at ABP Framework repository. Check: https://github.com/abpframework/abp-samples/tree/master/SingleLayer
+
 # Single Layer ABP Template
 
 This is a template that contains only one .NET project with includes all ABP Framework features.
@@ -10,3 +12,5 @@ This template is total representation of ABP Framework DDD layered template.
 2. Open the project directory with terminal.
 3. Cast `dotnet ef database update` command.
 4. Run the project.
+
+
